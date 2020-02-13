@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useContext, useReducer } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import Context from './middleware/context';
+import reducer from './Reducer';
+import ProtectedRoute from './utils/ProtectedRoute';
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+import App from "./pages/App";
+import Splash from "./pages/Splash";
+
+const Root = () => {
+  const initialState = useContext(Context);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <Router>
+      <Context.Provider value={{ state, dispatch }}>
+      <Switch>
+        <ProtectedRoute exact path='/' component={App} />
+        <Route path='/login' component={Splash} />
+      </Switch>
+      </Context.Provider>
+    </Router>
+  );
+};
+
+ReactDOM.render(<Root />, document.getElementById('root'));
